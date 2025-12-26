@@ -17047,7 +17047,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _topic: /clock
-  _publishHz: 100
+  _publishHz: 1000
   _qosSettings:
     _reliabilityPolicy: 1
     _durabilityPolicy: 2
@@ -39725,7 +39725,7 @@ MonoBehaviour:
   _v2iRosPublisher: {fileID: 2083782828}
   _clockPublisher: {fileID: 781536992}
   _nodeName: AWSIM
-  _timeSourceType: 0
+  _timeSourceType: 2
   _followCamera: {fileID: 1399028710}
   _commandLineConfigParam: --json_path
   _useJsonConfig: 0
@@ -306405,8 +306405,8 @@ MonoBehaviour:
   _cameraSensorScheduler: {fileID: 6351768944147178854}
   _cameraSensor: {fileID: 3685152921715250283}
   _cameraRos2Publisher: {fileID: 6147089113562499044}
-  _gnssSensor: {fileID: 0}
-  _gnssRos2Publisher: {fileID: 0}
+  _gnssSensor: {fileID: 8026256459638977776}
+  _gnssRos2Publisher: {fileID: 8026256459638977775}
 --- !u!4 &8966417073124472055
 Transform:
   m_ObjectHideFlags: 0
