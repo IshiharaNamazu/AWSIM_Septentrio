@@ -45,9 +45,6 @@ namespace Awsim.Entity
 
         [SerializeField] SeptentrioGnssSensor _gnssSensor;
 
-        IPublisher<NavSatFix> _navSatFixPublisher;
-        // IPublisher<AttEuler> _attEulerPublisher;
-        IPublisher<GnssInsOrientationStamped> _orientationPublisher;
 
         struct SeptentrioMsgs
         {
@@ -99,9 +96,7 @@ namespace Awsim.Entity
             }
 
 
-            var qos = _qosSettings.GetQosProfile();
 
-            _navSatFixPublisher = AwsimRos2Node.CreatePublisher<NavSatFix>(_navSatFixTopic, qos);
             _tmpData.NavSatFix = new NavSatFix
             {
                 Header = new Header { Frame_id = _frameId },
@@ -115,13 +110,11 @@ namespace Awsim.Entity
             for (int i = 0; i < _tmpData.NavSatFix.Position_covariance.Length; i++)
                 _tmpData.NavSatFix.Position_covariance[i] = 0;
             /*
-            _attEulerPublisher = AwsimRos2Node.CreatePublisher<AttEuler>(_attEulerTopic, qos);
             _tmpData.AttEuler = new AttEuler
             {
                 Header = new Header { Frame_id = _frameId }
             };
             */
-            _orientationPublisher = AwsimRos2Node.CreatePublisher<GnssInsOrientationStamped>(_orientationTopic, qos);
             _tmpData.Orientation = new GnssInsOrientationStamped
             {
                 Header = new Header { Frame_id = _frameId },
@@ -144,7 +137,7 @@ namespace Awsim.Entity
 
         void DataUpdate(SeptentrioGnssSensor.IReadOnlyOutputData data)
         {
-            if (_navSatFixPublisher == null || data?.GeoCoordinate == null || data.AttEuler == null)
+            if (data?.GeoCoordinate == null || data.AttEuler == null)
             {
                 return;
             }
@@ -221,8 +214,14 @@ namespace Awsim.Entity
 
             int period = (int)((1000.0f / _highFreqUpdateHz) + 0.5f);
 
+            // publishers
+            var qos = _qosSettings.GetQosProfile();
+            IPublisher<NavSatFix> navSatFixPublisher = AwsimRos2Node.CreatePublisher<NavSatFix>(_navSatFixTopic, qos);
+            // IPublisher<AttEuler> attEulerPublisher = AwsimRos2Node.CreatePublisher<AttEuler>(_attEulerTopic, qos);
+            IPublisher<GnssInsOrientationStamped> orientationPublisher = AwsimRos2Node.CreatePublisher<GnssInsOrientationStamped>(_orientationTopic, qos);
+
             //準備が整うまで待機
-            while (_gnssSensor == null || _navSatFixPublisher == null || _orientationPublisher == null) // || _attEulerPublisher == null)
+            while (_gnssSensor == null || navSatFixPublisher == null || orientationPublisher == null) // || attEulerPublisher == null)
             {
                 Thread.Sleep(period);
             }
@@ -259,9 +258,9 @@ namespace Awsim.Entity
                        ((pqMsg.First().Key.Item1 == now_sec) && (pqMsg.First().Key.Item2 <= now_nanosec))))
                 {
                     var first_item = pqMsg.First();
-                    _navSatFixPublisher.Publish(first_item.Value.NavSatFix);
-                    // _attEulerPublisher.Publish(first_item.Value.AttEuler);
-                    _orientationPublisher.Publish(first_item.Value.Orientation);
+                    navSatFixPublisher.Publish(first_item.Value.NavSatFix);
+                    // attEulerPublisher.Publish(first_item.Value.AttEuler);
+                    orientationPublisher.Publish(first_item.Value.Orientation);
 
                     _totalMeasuredDelayMs = (float)(now_sec - first_item.Value.DataSec) * 1000.0f +
                                             (float)(now_nanosec - first_item.Value.DataNanoSec) / 1e6f;
@@ -274,9 +273,13 @@ namespace Awsim.Entity
                     pqMsg.Remove(first_item.Key);
                 }
             }
+            // OnDestroy
+            AwsimRos2Node.RemovePublisher<NavSatFix>(navSatFixPublisher);
+            // AwsimRos2Node.RemovePublisher<AttEuler>(attEulerPublisher);
+            AwsimRos2Node.RemovePublisher<GnssInsOrientationStamped>(orientationPublisher);
         }
 
-        private NavSatFix CreateDeepCopyNavSatFix(NavSatFix original)
+        private static NavSatFix CreateDeepCopyNavSatFix(NavSatFix original)
         {
             var newNavSatFix = new NavSatFix
             {
@@ -306,7 +309,7 @@ namespace Awsim.Entity
         }
 
         /*
-        private AttEuler CreateDeepCopyAttEuler(AttEuler original)
+        private static AttEuler CreateDeepCopyAttEuler(AttEuler original)
         {
             var newAttEuler = new AttEuler
             {
@@ -331,7 +334,7 @@ namespace Awsim.Entity
         }
         */
 
-        private GnssInsOrientationStamped CreateDeepCopyOrientation(GnssInsOrientationStamped original)
+        private static GnssInsOrientationStamped CreateDeepCopyOrientation(GnssInsOrientationStamped original)
         {
             var newOrientation = new GnssInsOrientationStamped
             {
@@ -369,9 +372,6 @@ namespace Awsim.Entity
             {
                 _gnssSensor.OnOutput -= DataUpdate;
             }
-            AwsimRos2Node.RemovePublisher<NavSatFix>(_navSatFixPublisher);
-            // AwsimRos2Node.RemovePublisher<AttEuler>(_attEulerPublisher);
-            AwsimRos2Node.RemovePublisher<GnssInsOrientationStamped>(_orientationPublisher);
         }
 
         public static float GenerateGamma(float mean, float variance)
