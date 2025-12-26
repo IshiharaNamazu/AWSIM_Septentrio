@@ -144251,10 +144251,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8026256459638977774}
-  - component: {fileID: 6278468240108714102}
-  - component: {fileID: 8890510153027706156}
+  - component: {fileID: 8026256459638977776}
+  - component: {fileID: 8026256459638977775}
   m_Layer: 0
-  m_Name: GnssSensor
+  m_Name: SeptentrioGnssSensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -214888,20 +214888,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 949843744102259788}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6278468240108714102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3510742464746275008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42e1502f17e2141429e61f7e73b7640b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _outputHz: 1
-  _outputMode: 0
 --- !u!1 &6281015575899402631
 GameObject:
   m_ObjectHideFlags: 0
@@ -281801,6 +281787,46 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7712306261636449329}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8026256459638977775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3510742464746275008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 470836037f6f48930821a00e263a8993, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _navSatFixTopic: /sensing/gnss/septentrio/nav_sat_fix
+  _orientationTopic: /sensing/gnss/septentrio/orientation
+  _frameId: map
+  _qosSettings:
+    _reliabilityPolicy: 1
+    _durabilityPolicy: 2
+    _historyPolicy: 1
+    _depth: 1000
+  _gnssSensor: {fileID: 8026256459638977776}
+  _highFreqUpdateHz: 1000
+  _gammaDelay: 0
+  _gammaDelayMeanMs: 0
+  _gammaDelayVariance: 0
+  _gammaDelayMinMs: 0
+  _gammaDelayMaxMs: 10000
+--- !u!114 &8026256459638977776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3510742464746275008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 504e4d5160b99fb0ba213dbb0c53ca74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _outputHz: 50
 --- !u!4 &8027529854677976900
 Transform:
   m_ObjectHideFlags: 0
@@ -304309,29 +304335,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &8890510153027706156
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3510742464746275008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c2de5306b032962e9afa369cef49519, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _poseTopic: /sensing/gnss/pose
-  _poseWithCovTopic: /sensing/gnss/pose_with_covariance
-  _mgrsFrame: map
-  _navSatFixTopic: /sensing/gnss/ublox/nav_sat_fix
-  _frameId: map
-  _qosSettings:
-    _reliabilityPolicy: 1
-    _durabilityPolicy: 2
-    _historyPolicy: 1
-    _depth: 1
-  _gnssSensor: {fileID: 6278468240108714102}
 --- !u!4 &8890555614480121091
 Transform:
   m_ObjectHideFlags: 0
@@ -306402,8 +306405,8 @@ MonoBehaviour:
   _cameraSensorScheduler: {fileID: 6351768944147178854}
   _cameraSensor: {fileID: 3685152921715250283}
   _cameraRos2Publisher: {fileID: 6147089113562499044}
-  _gnssSensor: {fileID: 6278468240108714102}
-  _gnssRos2Publisher: {fileID: 8890510153027706156}
+  _gnssSensor: {fileID: 0}
+  _gnssRos2Publisher: {fileID: 0}
 --- !u!4 &8966417073124472055
 Transform:
   m_ObjectHideFlags: 0

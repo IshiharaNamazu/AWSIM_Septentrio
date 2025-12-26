@@ -41,8 +41,8 @@ namespace Awsim.Scene.AutowareSimulationSeptentrio
         [SerializeField] CameraSensorScheduler _cameraSensorScheduler;
         [SerializeField] CameraSensor _cameraSensor;
         [SerializeField] CameraRos2Publisher _cameraRos2Publisher;
-        [SerializeField] GnssSensor _gnssSensor;
-        [SerializeField] GnssRos2Publisher _gnssRos2Publisher;
+        [SerializeField] SeptentrioGnssSensor _gnssSensor;
+        [SerializeField] SeptentrioGnssRos2Publisher _gnssRos2Publisher;
         // [SerializeField] RtcAutoResponder _rtcAutoResponder;
 
         public void Initialize(AccelVehicleLogitechG29Input.Settings logitechG29Settings, AccelVehicle.Settings accelVehicleSettings, Vector3 initialVehiclePosition, Quaternion initialVehicleRotation)
