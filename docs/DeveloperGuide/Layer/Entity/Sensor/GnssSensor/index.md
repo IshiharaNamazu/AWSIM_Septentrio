@@ -25,7 +25,7 @@ The accuracy of the simulated delay depends on the TimeSource configuration. Whe
 
 ### How to use
 
-1. Setup `MgrsPosition` and `GeoCoordinatePosition` int the scene.
+1. Setup `MgrsPosition` and `GeoCoordinatePosition` in the scene.
 1. Initialize `GnssSensor`.
 
 
@@ -89,13 +89,13 @@ _gnssSensor.OnOutput += Publish;
 |`int`|`_highFreqUpdateHz`|Update period for publishing.<=1000|
 |`bool`|`_gammaDelay`|Enable delay setting.|
 |`float`|`_gammaDelayMeanMs`| Mean of the distribution (including bias). |
-|`float`|`_gammaDelayVariance`| Variance of the distribution (milli second). |
+|`float`|`_gammaDelayVariance`| Variance of the distribution ($\text{milliseconds}^2$). |
 |`float`|`_gammaDelayMinMs`| Minimum value of the distribution. |
 |`float`|`_gammaDelayMaxMs`| Max value of the distribution. |
 
 ### Default publish topics
 
-`GnssRos2Publisher` is configured by default with the following two topics publsiih.
+`GnssRos2Publisher` is configured by default with the following two topics publishing.
 
 | Topic| Message type | `frame_id` | `Hz` | `QoS` |
 |:---|:---|:---|:---:|:---|
