@@ -1,5 +1,7 @@
 `GnssSensor` is a component which simulates the position of vehicle computed by the *Global Navigation Satellite System* based on the transformation of the *GameObject* to which this component is attached.
-The `GnssSensor` outputs the position in the [*MGRS*](https://www.maptools.com/tutorials/mgrs/quick_guide) coordinate system and [*Geo coordinate system*](https://en.wikipedia.org/wiki/Geographic_coordinate_system).
+The `GnssSensor` allows you to select the output format: [*NavSatFix*](https://docs.ros.org/en/ros2_packages/humble/api/sensor_msgs/msg/NavSatFix.html) or the [*MGRS*](https://www.maptools.com/tutorials/mgrs/quick_guide) coordinate system and [*Geo coordinate system*](https://en.wikipedia.org/wiki/Geographic_coordinate_system).
+It is also possible to enable Heading output.
+The GnssSensor can be configured with a delay that follows a distribution consisting of a minimum value (bias) plus a Gamma distribution.
 
 ## Prefab
 
@@ -12,11 +14,14 @@ Assets/Awsim/Entity/EgoVehicle/Gnss/GnssSensor.prefab
 
 ## GnssSensor class
 
-`GnssSensor` outputs MGRS and GeoCoordinate coordinate positions based on the configured period.
+`GnssSensor` allows you to select the output format: NavSatFix or the MGRS coordinate system and Geo coordinate system. It is also possible to enable Heading output.
+The sensor outputs data based on the configured period.
+The `GnssSensor` can be configured with a delay that follows a distribution consisting of a minimum value (bias) plus a Gamma distribution.
 
 ### prerequisites
 
 `MgrsPosition` and `GeoCoordinatePosition` need to be set up. From these classes, the output is converted to each coordinate system by considering the Unity world coordinate system origin and sensor position.
+The accuracy of the simulated delay depends on the TimeSource configuration. When configuring a delay, please select a `TimeSourceType` with sufficient precision.
 
 ### How to use
 
@@ -29,6 +34,8 @@ Assets/Awsim/Entity/EgoVehicle/Gnss/GnssSensor.prefab
 |Type|Parameter|Feature|
 |:--|:--|:--|
 |`int`|`_outputHz`|Period to output.|
+|`GnssOutputMode`|`_outputMode`|Mgrs or NavSatFix.|
+|`bool`|`_attitudeOutput`|Enable heading output.|
 
 ### Output data
 
@@ -38,10 +45,11 @@ It is contained in the `GnssSensor.IReadOnlyOutputData` type.
 |:--|:--|:--|
 |`Mgrs`|`Mgrs`|MGRS coordinate system position.|
 |`GeoCoordinate`|`GeoCoordinate`|GeoCoordinate coordinate system position.|
+|`AttEuler`|`AttEuler`|Attitude and angular velocity. Currently only Heading.|
 
 ### Geo reference
 
-`GnssSensor` outputs the sum of the origin value set for each geo reference and the value obtained by converting the Unity world coordinates to each geo reference. There are two classes of georeferencing.
+`GnssSensor` MGRS outputs the sum of the origin value set for each geo reference and the value obtained by converting the Unity world coordinates to each geo reference. There are two classes of georeferencing.
 
 |Geo reference|Feature|
 |:--|:--|
@@ -72,15 +80,24 @@ _gnssSensor.OnOutput += Publish;
 |:--|:--|:--|
 |`string`|`_poseTopic`|`geometry_msgs/Pose` msg topic name.|
 |`string`|`_poseWithCovarianceStampedTopic`|`geometry_msgs/PoseWithCovarianceStamped` msg topic name.|
-|`string`|`_frameID`|Frame ID of ros2.|
+|`string`|`_mgrsFrame`|MGRS frame ID of ros2.|
+|`string`|`_navSatFixTopic`|`sensor_msgs/NavSatFix` msg topic name.|
+|`string`|`_frameID`|NavSatFix frame ID of ros2.|
+|`string`|`_orientationTopic`|`autoware_sensing_msgs/GnssInsOrientationStamped` msg topic name.|
 |`QosSettings`|`_qosSettings`|Quality of Service settings of ros2.|
 |`GnssSensor`|`_gnssSensor`|Target `GnssSensor` instance.|
+|`int`|`_highFreqUpdateHz`|Update period for publishing.<=1000|
+|`bool`|`_gammaDelay`|Enable delay setting.|
+|`float`|`_gammaDelayMeanMs`| Mean of the distribution (including bias). |
+|`float`|`_gammaDelayVariance`| Variance of the distribution (milli second). |
+|`float`|`_gammaDelayMinMs`| Minimum value of the distribution. |
+|`float`|`_gammaDelayMaxMs`| Max value of the distribution. |
 
 ### Default publish topics
 
 `GnssRos2Publisher` is configured by default with the following two topics publsiih.
 
-| Topic                                | Message type                                                                                                                   | `frame_id`  | `Hz`  | `QoS`                                                            |
-|--:-----------------------------------|--:-----------------------------------------------------------------------------------------------------------------------------|--:----------|--:-:--|--:---------------------------------------------------------------|
+| Topic| Message type | `frame_id` | `Hz` | `QoS` |
+|:---|:---|:---|:---:|:---|
 | `/sensing/gnss/pose`                 | [`geometry_msgs/Pose`](https://docs.ros.org/en/api/geometry_msgs/html/msg/Pose.html)                                           | `gnss_link` | `1`   | <ul><li>`Reliable`</li><li>`Volatile`</li><li>`Keep last/1`</li> |
 | `/sensing/gnss/pose_with_covariance` | [`geometry_msgs/PoseWithCovarianceStamped`](https://docs.ros.org/en/api/geometry_msgs/html/msg/PoseWithCovarianceStamped.html) | `gnss_link` | `1`   | <ul><li>`Reliable`</li><li>`Volatile`</li><li>`Keep last/1`</li> |
