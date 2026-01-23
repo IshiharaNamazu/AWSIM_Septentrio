@@ -6,7 +6,7 @@ The GnssSensor can be configured with a delay that follows a distribution consis
 ## Prefab
 
 ```{.yml .no-copy}
-Assets/Awsim/Entity/EgoVehicle/Gnss/GnssSensor.prefab
+Assets/Awsim/Prefabs/Entity/EgoVehicle/Sensor/Gnss/GnssSensor.prefab
 ```
 
 <br>
