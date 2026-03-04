@@ -46,6 +46,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _outputHz: 1
+  _outputMode: 0
+  _attitudeOutput: 0
 --- !u!114 &4067168960116065205
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59,11 +61,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _poseTopic: /sensing/gnss/pose
-  _poseWithCovarianceStampedTopic: /sensing/gnss/pose_with_covariance
-  _frameID: map
+  _poseWithCovTopic: /sensing/gnss/pose_with_covariance
+  _mgrsFrame: /gnss_link
+  _navSatFixTopic: /sensing/gnss/ublox/nav_sat_fix
+  _frameId: map
+  _orientationTopic: /sensing/gnss/orientation
   _qosSettings:
     _reliabilityPolicy: 1
     _durabilityPolicy: 2
     _historyPolicy: 1
-    _depth: 1
+    _depth: 1000
   _gnssSensor: {fileID: 1455096875119978223}
+  _highFreqUpdateHz: 1000
+  _gammaDelay: 0
+  _gammaDelayMeanMs: 0
+  _gammaDelayVariance: 0
+  _gammaDelayMinMs: 0
+  _gammaDelayMaxMs: 10000
