@@ -67,6 +67,11 @@ namespace Awsim.Entity
         public GnssOutputMode OutputMode => _outputMode;
         OutputData _outputData = null;
         Transform _transform = null;
+        
+        // Gauss-Markov noise parameters
+        [SerializeField] Vector3 _whiteNoiseVar = Vector3.zero;   // White Noise Variance
+        [SerializeField] Vector3 _processVar = Vector3.zero;      // Variance
+        Vector3 _gaussMarkovNoise = Vector3.zero;                  // Current noise value
 
         /// <summary>
         /// Initialize gnss sensor.
@@ -104,7 +109,9 @@ namespace Awsim.Entity
         /// </summary>
         void Output()
         {
-            var unityPosition = _transform.position;
+            UpdateGaussMarkovVector(ref _gaussMarkovNoise);
+
+            var unityPosition = _transform.position + _gaussMarkovNoise;
             var rosPosition = Ros2Utility.UnityToRos2Position(unityPosition);
             var mgrsBase      = MgrsPosition.Instance.Mgrs;
             var mgrsPosition = rosPosition + mgrsBase.Position;
@@ -120,6 +127,39 @@ namespace Awsim.Entity
 
             // Calls registered callbacks.
             OnOutput?.Invoke(_outputData);
+        }
+        
+        private Vector3 UpdateGaussMarkovVector(ref Vector3 previousGaussMarkovNoise)
+        {
+            UpdateGaussMarkov(ref previousGaussMarkovNoise.x, _whiteNoiseVar.x, _processVar.x);
+            UpdateGaussMarkov(ref previousGaussMarkovNoise.y, _whiteNoiseVar.y, _processVar.y);
+            UpdateGaussMarkov(ref previousGaussMarkovNoise.z, _whiteNoiseVar.z, _processVar.z);
+            return previousGaussMarkovNoise;
+        }
+        private float UpdateGaussMarkov(ref float previousGaussMarkovNoise, float wVar, float pVar)
+        {
+            // Generate Gauss-Markov noise
+            //
+            if (pVar <= 0 || wVar <= 0)
+            {
+                return previousGaussMarkovNoise = 0f;    // If the variance is invalid, return 0 noise.
+            }
+            if(wVar >= pVar)
+            {
+                // If the noise is more likely to be white noise, return white noise.
+                return previousGaussMarkovNoise = GenerateGaussian(0, Mathf.Sqrt(wVar));
+            }
+            float alpha = Mathf.Sqrt(1f - wVar / pVar);
+            float whiteNoise = GenerateGaussian(0, Mathf.Sqrt(wVar));
+            return previousGaussMarkovNoise = alpha * previousGaussMarkovNoise + whiteNoise;
+        }
+        private static float GenerateGaussian(float mean, float stdDev)
+        {
+            // Generate Gaussian (normal) noise using Box-Muller transform
+            float u1 = 1.0f - UnityEngine.Random.Range(0f, 1f); // avoid 0
+            float u2 = 1.0f - UnityEngine.Random.Range(0f, 1f);
+            float randStdNormal = Mathf.Sqrt(-2.0f * Mathf.Log(u1)) * Mathf.Cos(2.0f * Mathf.PI * u2);
+            return randStdNormal * stdDev + mean;
         }
     }
 }
