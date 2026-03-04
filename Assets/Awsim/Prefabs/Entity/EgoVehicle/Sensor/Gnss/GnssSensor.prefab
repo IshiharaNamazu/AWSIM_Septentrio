@@ -46,8 +46,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _outputHz: 1
-  _outputMode: 0
+  _outputMode: 1
   _attitudeOutput: 0
+  _whiteNoiseVar: {x: 0, y: 0, z: 0}
+  _processVar: {x: 0, y: 0, z: 0}
 --- !u!114 &4067168960116065205
 MonoBehaviour:
   m_ObjectHideFlags: 0
