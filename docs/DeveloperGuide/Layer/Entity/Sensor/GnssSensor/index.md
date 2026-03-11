@@ -1,7 +1,7 @@
 `GnssSensor` is a component which simulates the position of vehicle computed by the *Global Navigation Satellite System* based on the transformation of the *GameObject* to which this component is attached.
 The `GnssSensor` allows you to select the output format: [*NavSatFix*](https://docs.ros.org/en/ros2_packages/humble/api/sensor_msgs/msg/NavSatFix.html) or the [*MGRS*](https://www.maptools.com/tutorials/mgrs/quick_guide) coordinate system and [*Geo coordinate system*](https://en.wikipedia.org/wiki/Geographic_coordinate_system).
 It is also possible to enable Heading output.
-The GnssSensor can be configured with a delay that follows a distribution consisting of a minimum value (bias) plus a Gamma distribution.
+The `GnssSensor` can be configured with sensor noise consisting of a Gauss-Markov process and a delay following a Gamma distribution.
 
 ## Prefab
 
@@ -16,7 +16,7 @@ Assets/Awsim/Prefabs/Entity/EgoVehicle/Sensor/Gnss/GnssSensor.prefab
 
 `GnssSensor` allows you to select the output format: NavSatFix or the MGRS coordinate system and Geo coordinate system. It is also possible to enable Heading output.
 The sensor outputs data based on the configured period.
-The `GnssSensor` can be configured with a delay that follows a distribution consisting of a minimum value (bias) plus a Gamma distribution.
+The `GnssSensor` can be configured with sensor noise consisting of a Gauss-Markov process and a delay following a Gamma distribution.
 
 ### prerequisites
 
@@ -36,6 +36,8 @@ The accuracy of the simulated delay depends on the TimeSource configuration. Whe
 |`int`|`_outputHz`|Period to output.|
 |`GnssOutputMode`|`_outputMode`|Mgrs or NavSatFix.|
 |`bool`|`_attitudeOutput`|Enable heading output.|
+| `Vector3` | `ProcessVar` | Variance of the noise process [$m^2$]. |
+| `Vector3` | `WhiteNoiseVar` | Variance of the random walk [$m^2$]. |
 
 ### Output data
 
@@ -99,5 +101,6 @@ _gnssSensor.OnOutput += Publish;
 
 | Topic| Message type | `frame_id` | `Hz` | `QoS` |
 |:---|:---|:---|:---:|:---|
-| `/sensing/gnss/pose`                 | [`geometry_msgs/Pose`](https://docs.ros.org/en/api/geometry_msgs/html/msg/Pose.html)                                           | `gnss_link` | `1`   | <ul><li>`Reliable`</li><li>`Volatile`</li><li>`Keep last/1`</li> |
-| `/sensing/gnss/pose_with_covariance` | [`geometry_msgs/PoseWithCovarianceStamped`](https://docs.ros.org/en/api/geometry_msgs/html/msg/PoseWithCovarianceStamped.html) | `gnss_link` | `1`   | <ul><li>`Reliable`</li><li>`Volatile`</li><li>`Keep last/1`</li> |
+| `/sensing/gnss/pose`                 | [`geometry_msgs/Pose`](https://docs.ros.org/en/api/geometry_msgs/html/msg/Pose.html)                                           | `map` | `1`   | <ul><li>`Reliable`</li><li>`Volatile`</li><li>`Keep last/1`</li> |
+| `/sensing/gnss/pose_with_covariance` | [`geometry_msgs/PoseWithCovarianceStamped`](https://docs.ros.org/en/api/geometry_msgs/html/msg/PoseWithCovarianceStamped.html) | `map` | `1`   | <ul><li>`Reliable`</li><li>`Volatile`</li><li>`Keep last/1`</li> |
+| `/sensing/gnss/orientation` | [`autoware_sensing_msgs/GnssInsOrientationStamped`](https://docs.ros.org/en/humble/p/autoware_sensing_msgs/msg/GnssInsOrientationStamped.html) | `map` | `0(1)`   | <ul><li>`Reliable`</li><li>`Volatile`</li><li>`Keep last/1`</li> |
